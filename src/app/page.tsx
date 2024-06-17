@@ -1,6 +1,7 @@
 import { Decor } from '@/components/Decor';
 import MaxWidthWrapper from '@/components/MaxWidthWrapper';
 import Phone from '@/components/Phone';
+import Reviews from '@/components/Reviews';
 import { Check, Star } from 'lucide-react';
 import Image from 'next/image';
 
@@ -213,6 +214,9 @@ export default function Home() {
             </div>
           </div>
         </MaxWidthWrapper>
+        <div className="pt-16">
+          <Reviews />
+        </div>
       </section>
     </div>
   );

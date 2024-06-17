@@ -2,12 +2,12 @@ import { LucideProps } from 'lucide-react';
 
 export const Decor = {
   underline: (props: LucideProps) => (
-    <svg {...props} viewBox="0 0 687 155">
+    <svg viewBox="0 0 687 155" {...props}>
       <g
         stroke="currentColor"
         strokeWidth="7"
         fill="none"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         strokeLinecap="round"
         strokeLinejoin="round"
       >

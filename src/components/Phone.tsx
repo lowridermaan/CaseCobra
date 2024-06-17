@@ -32,6 +32,7 @@ function Phone({ imgSrc, className, dark = false, ...props }: PhoneProps) {
       <div className="absolute -z-10 inset-0">
         <Image
           src={imgSrc}
+          priority={true}
           className="h-full object-cover"
           alt="overlaying phone image"
           width={1000}

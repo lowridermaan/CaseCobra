@@ -1,6 +1,6 @@
 import { LucideProps } from 'lucide-react';
 
-export const Decors = {
+export const Decor = {
   underline: (props: LucideProps) => (
     <svg {...props} viewBox="0 0 687 155">
       <g

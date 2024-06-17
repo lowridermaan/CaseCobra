@@ -1,4 +1,4 @@
-import { Decors } from '@/components/Decors';
+import { Decor } from '@/components/Decor';
 import MaxWidthWrapper from '@/components/MaxWidthWrapper';
 import Phone from '@/components/Phone';
 import { Check, Star } from 'lucide-react';
@@ -123,16 +123,94 @@ export default function Home() {
         </MaxWidthWrapper>
       </section>
       <section className="bg-slate-100 py-24">
-        <MaxWidthWrapper className="flex flex-colitems-center gap-16 sm:gap-32">
+        <MaxWidthWrapper className="flex flex-col items-center justify-center gap-16 sm:gap-32">
           <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-6">
             <h2 className="order-1 mt-2 tracking-tight text-center text-balance !leading-tight font-bold text-5xl md:text-6xl text-gray-900">
               What our{' '}
               <span className="relative px-2">
                 customers{' '}
-                <Decors.underline className="hidden sm:block pointer-event-none absolute inset-x-0 -bottom-7 text-green-600" />
+                <Decor.underline className="hidden sm:block pointer-event-none absolute inset-x-0 -bottom-7 text-green-600" />
               </span>{' '}
               say
             </h2>
+          </div>
+          <div className="mx-auto grid max-w-2xl grid-cols-1 px-4 lg:mx-0 lg:max-w-none lg:grid-cols-2 gap-y-16">
+            <div className="flex flex-auto flex-col gap-4 lg:pr-8 xl:pr-20">
+              <div className="flex gap-0.5 mb-2">
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+              </div>
+              <div className="text-lg leading-8">
+                <p>
+                  &ldquo; The case feel durable and I even got a compliment on
+                  the design. Had the case for two a half months now and{' '}
+                  <em className="font-semibold underline">
+                    the image supper clear
+                  </em>
+                  , on the case I had before, the image started fading into
+                  yellow-ish color after a couple weeks. Love it &ldquo;
+                </p>
+              </div>
+              <div className="flex gap-4 mt-2">
+                <Image
+                  className="rounded-full h-12 w-12 object-cover"
+                  src="/users/user-4.jpg"
+                  width={1000}
+                  height={1000}
+                  alt="user-photo"
+                />
+                <div className="flex flex-col">
+                  <p className="font-semibold">Bob</p>
+                  <div className="flex gap-1.5 items-center text-zinc-600">
+                    <Check className="h-4 w-4 stroke-[3px] text-green-600" />
+                    <p className=" text-sm">Verified Purchase</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* second user review */}
+          <div className="mx-auto grid max-w-2xl grid-cols-1 px-4 lg:mx-0 lg:max-w-none lg:grid-cols-2 gap-y-16">
+            <div className="flex flex-auto flex-col gap-4 lg:pr-8 xl:pr-20">
+              <div className="flex gap-0.5 mb-2">
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+                <Star className="h-5 w-5 text-green-600 fill-green-600" />
+              </div>
+              <div className="text-lg leading-8">
+                <p>
+                  &ldquo; I usually keep my phone together with my keys in my
+                  pocket and that led to some pretty heavy scratchmarks on all
+                  of my last phone case. This one besides a barely noticeable
+                  scratch on the corner{' '}
+                  <em className="font-semibold underline">
+                    looks brand new after about half a year
+                  </em>
+                  , I dig it. &ldquo;
+                </p>
+              </div>
+              <div className="flex gap-4 mt-2">
+                <Image
+                  className="rounded-full h-12 w-12 object-cover"
+                  src="/users/user-5.jpg"
+                  width={1000}
+                  height={1000}
+                  alt="user-photo"
+                />
+                <div className="flex flex-col">
+                  <p className="font-semibold">Eric</p>
+                  <div className="flex gap-1.5 items-center text-zinc-600">
+                    <Check className="h-4 w-4 stroke-[3px] text-green-600" />
+                    <p className=" text-sm">Verified Purchase</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </MaxWidthWrapper>
       </section>

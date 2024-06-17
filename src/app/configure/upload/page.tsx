@@ -1,11 +1,16 @@
 'use client';
 
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { ImageIcon, Loader, MousePointerSquareDashed } from 'lucide-react';
+import { useState, useTransition } from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';
 
 function Page() {
   const [isDragOver, setIsDtragOver] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [isPending, startTransition] = useTransition();
+  const isUploading = false;
 
   const onDropRejected = () => {};
   const onDropAccepted = () => {};
@@ -36,7 +41,40 @@ function Page() {
               className="h-full w-full flex-1 flex flex-col items-center justify-center"
               {...getRootProps()}
             >
-              <input {...getInputProps()} /> DRAG AND DROP
+              <input {...getInputProps()} />
+              {isDragOver ? (
+                <MousePointerSquareDashed className="h-6 w-6 text-zinc-500 mb-2" />
+              ) : isUploading || isPending ? (
+                <Loader className="animate-spin h-6 w-6 text-zinc-500 mb-2" />
+              ) : (
+                <ImageIcon className="h-6 w-6 text-zinc-500 mb-2" />
+              )}
+              <div className="felx flex-col justify-center mb-2 text-sm text-zinc-700">
+                {isUploading ? (
+                  <div className="flex flex-col items-center">
+                    <p>Uploading...</p>
+                    <Progress
+                      value={uploadProgress}
+                      className=" mt-2 w-40 h-2 bg-gray-300"
+                    />
+                  </div>
+                ) : isPending ? (
+                  <div className="flex flex-col items-center">
+                    <p>Redirecting, please wait... </p>
+                  </div>
+                ) : isDragOver ? (
+                  <p>
+                    <span className="font-semibold">Drop file</span> to upload
+                  </p>
+                ) : (
+                  <p className="font-semibold">
+                    Click to upload or drag and drop
+                  </p>
+                )}
+              </div>
+              {isPending ? null : (
+                <p className="text-xs text-zinc-500">PNG, JPG, JPEG</p>
+              )}
             </div>
           )}
         </Dropzone>

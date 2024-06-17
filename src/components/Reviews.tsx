@@ -120,7 +120,7 @@ function ReviewGrid() {
   const column2 = columns[1];
 
   const column3 = splitArray(columns[2], 2);
-  console.log(column1, column2, column3.flat());
+
   return (
     <div
       ref={containerRef}

@@ -2,20 +2,20 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { HTMLAttributes } from 'react';
 
-// HTMLAttributes<HTMLDivElement> элементу будлут доступны все аттрибуты div
-
+// HTMLAttributes<HTMLDivElement> элементу будут доступны все props div
 interface PhoneProps extends HTMLAttributes<HTMLDivElement> {
   imgSrc: string;
   dark?: boolean;
 }
 
-function Phone({ imgSrc, className, dark, ...props }: PhoneProps) {
+function Phone({ imgSrc, className, dark = false, ...props }: PhoneProps) {
   return (
     <div
       className={cn(
         'relative pointer-events-none z-50 overflow-hidden ',
         className
       )}
+      // HTMLAttributes<HTMLDivElement> нужен чтобы можно было манипулировать компонентом так как будто он div
       {...props}
     >
       <Image
@@ -24,14 +24,15 @@ function Phone({ imgSrc, className, dark, ...props }: PhoneProps) {
             ? '/phone-template-dark-edges.png'
             : '/phone-template-white-edges.png'
         }
-        className=" pointer-events-none z-50 select-none"
+        className="pointer-events-none z-50 select-none"
         width={1000}
         height={1000}
         alt="phone image"
       />
-      <div className=" absolute -z-10 inset-0">
+      <div className="absolute -z-10 inset-0">
         <Image
           src={imgSrc}
+          className="h-full object-cover"
           alt="overlaying phone image"
           width={1000}
           height={1000}

@@ -21,7 +21,7 @@ function Page() {
     onClientUploadComplete: ([data]) => {
       const configId = data.serverData.configId;
       startTransition(() => {
-        router.push(`/configure/disign?id=${configId}`);
+        router.push(`/configure/design?id=${configId}`);
       });
     },
     // процесс загрузки P число
@@ -43,9 +43,6 @@ function Page() {
     startUpload(acceptedFiles, { configId: undefined });
 
     setIsDtragOver(false);
-    toast({
-      description: 'Image successifull uploaded',
-    });
   };
 
   return (

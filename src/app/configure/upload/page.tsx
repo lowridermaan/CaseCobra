@@ -24,7 +24,6 @@ function Page() {
         router.push(`/configure/design?id=${configId}`);
       });
     },
-    // процесс загрузки P число
     onUploadProgress(p) {
       setUploadProgress(p);
     },

@@ -1,6 +1,8 @@
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { HTMLAttributes } from 'react';
+import darkEdges from '../../public/phone-template-dark-edges.png';
+import lightEdges from '../../public/phone-template-white-edges.png';
 
 // HTMLAttributes<HTMLDivElement> элементу будут доступны все props div
 interface PhoneProps extends HTMLAttributes<HTMLDivElement> {
@@ -19,14 +21,10 @@ function Phone({ imgSrc, className, dark = false, ...props }: PhoneProps) {
       {...props}
     >
       <Image
-        src={
-          dark
-            ? '/phone-template-dark-edges.png'
-            : '/phone-template-white-edges.png'
-        }
+        src={dark ? darkEdges : lightEdges}
         className="pointer-events-none z-50 select-none"
-        width={1000}
-        height={1000}
+        // width={1000}
+        // height={1000}
         alt="phone image"
       />
       <div className="absolute -z-10 inset-0">

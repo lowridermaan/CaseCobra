@@ -22,6 +22,7 @@ export const ourFileRouter = {
       const { width, height } = imageMetadata;
 
       if (!configId) {
+        //так будет называется таблица
         const configuration = await db.configuration.create({
           data: {
             imageUrl: file.url,
@@ -32,11 +33,13 @@ export const ourFileRouter = {
 
         return { configId: configuration.id };
       } else {
-        // для кропнутой картинки
+        // для кропнутой картинки (обновляем таблицу)
         const updatedConfiguration = await db.configuration.update({
+          // где обновлять
           where: {
             id: configId,
           },
+          // что обновлять
           data: {
             croppedImageUrl: file.url,
           },

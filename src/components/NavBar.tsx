@@ -1,9 +1,8 @@
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import MaxWidthWrapper from './MaxWidthWrapper';
 import { buttonVariants } from './ui/button';
-import { ArrowRight } from 'lucide-react';
-import { LoginLink } from '@kinde-oss/kinde-auth-nextjs';
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 async function NavBar() {
   const { getUser } = getKindeServerSession();

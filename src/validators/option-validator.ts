@@ -61,7 +61,7 @@ export const MODELS = {
 } as const;
 
 export const MATERIALS = {
-  name: 'materials',
+  name: 'material',
   options: [
     {
       label: 'Silicone',

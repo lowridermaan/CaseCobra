@@ -49,7 +49,11 @@ function Steps() {
               <span
                 className={cn(
                   i !== 0 ? 'lg:pl-9' : '',
-                  'flex items-center px-6 py-4 text-sm font-medium'
+                  'flex items-center px-6 py-4 text-sm font-medium bg-gray-100 lg:bg-transparent border-b-2 border-zinc-200',
+                  {
+                    'sm: bg-green-100': isCurrent,
+                    'sm:bg-gray-200': isComplited,
+                  }
                 )}
               >
                 <span className="flex-shrink-0">
@@ -58,13 +62,7 @@ function Steps() {
                     alt="snake"
                     width={1000}
                     height={1000}
-                    className={cn(
-                      'flex h-20 w-20 object-contain items-center justify-center',
-                      {
-                        'border-none': isComplited,
-                        'border-zinc-700': isCurrent,
-                      }
-                    )}
+                    className="hidden lg:flex h-20 w-20 object-contain items-center justify-center"
                   />
                 </span>
                 <span className="ml-4 h-full mt-0.5 flex min-w-0 flex-col justify-center">

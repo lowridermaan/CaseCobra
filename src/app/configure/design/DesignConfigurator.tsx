@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Rnd } from 'react-rnd';
 import { Radio, RadioGroup } from '@headlessui/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { COLORS, MODELS } from '@/validators/option-validator';
 import { Label } from '@/components/ui/label';
 import {
@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
+import Moveable from 'react-moveable';
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -32,6 +33,7 @@ function DesignConfigurator({
   imageUrl,
   imageDimensions,
 }: DesignConfiguratorProps) {
+  const targetRef = useRef<HTMLImageElement>(null);
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
     model: (typeof MODELS.options)[number];
@@ -64,31 +66,46 @@ function DesignConfigurator({
           />
         </div>
         {/* изменение размеров*/}
-        <Rnd
-          default={{
-            x: 150,
-            y: 205,
-            width: imageDimensions.width / 8,
-            height: imageDimensions.height / 8,
-          }}
-          className="absolute z-20 border-[3px] border-primary"
-          lockAspectRatio
-          resizeHandleComponent={{
-            topLeft: <HandleResize />,
-            topRight: <HandleResize />,
-            bottomLeft: <HandleResize />,
-            bottomRight: <HandleResize />,
+
+        <div
+          className="absolute flex items-center justify-center"
+          ref={targetRef}
+          style={{
+            transform: 'translate(0px, 0px) rotate(0deg) scale(1, 1)',
           }}
         >
-          <div className="relativ w-full h-full">
-            <Image
-              src={imageUrl}
-              fill
-              alt="your image"
-              className="pointer-events-none"
-            />
-          </div>
-        </Rnd>
+          <Image
+            width={1000}
+            height={1000}
+            src={imageUrl}
+            alt="your image"
+            className="pointer-events-none w-[150px] "
+          />
+        </div>
+        <Moveable
+          target={targetRef}
+          draggable={true}
+          throttleDrag={1}
+          edgeDraggable={false}
+          startDragRotate={0}
+          throttleDragRotate={0}
+          scalable={true}
+          keepRatio={true}
+          throttleScale={0}
+          renderDirections={['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se']}
+          rotatable={true}
+          throttleRotate={0}
+          rotationPosition={'top'}
+          onDrag={(e) => {
+            e.target.style.transform = e.transform;
+          }}
+          onScale={(e) => {
+            e.target.style.transform = e.drag.transform;
+          }}
+          onRotate={(e) => {
+            e.target.style.transform = e.drag.transform;
+          }}
+        />
       </div>
       <div className="h-[37.5rem] flex flex-col bg-white">
         <ScrollArea className="realative flex-1 overflow-auto">

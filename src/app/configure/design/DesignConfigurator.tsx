@@ -10,8 +10,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/components/ui/use-toast';
 import { BASE_PRICE } from '@/config/products';
-import { cn, formatPrice } from '@/lib/utils';
+import { useUploadThing } from '@/lib/uploadthing';
+import { base64ToBlob, cn, formatPrice } from '@/lib/utils';
 import {
   COLORS,
   FINISHES,
@@ -21,7 +23,7 @@ import {
 import { Description, Radio, RadioGroup, Label } from '@headlessui/react';
 import { DropdownMenuLabel } from '@radix-ui/react-dropdown-menu';
 import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { useRef, useState } from 'react';
 import Moveable from 'react-moveable';
 
@@ -36,7 +38,14 @@ function DesignConfigurator({
   imageUrl,
   imageDimensions,
 }: DesignConfiguratorProps) {
+  const { toast } = useToast();
+  // для загрузки файла
+  const { startUpload } = useUploadThing('imageUploader');
+
   const targetRef = useRef<HTMLDivElement | null>(null);
+  const phoneCaseRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
     model: (typeof MODELS.options)[number];
@@ -49,15 +58,96 @@ function DesignConfigurator({
     finish: FINISHES.options[0],
   });
 
+  // размер фотки на экране
+  const [renderedDimension, setRenderedDimension] = useState({
+    width: imageDimensions.width / 4,
+    height: imageDimensions.height / 4,
+  });
+  // расположение фотки
+  const [renderPosition, setRenderPosition] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  const [renderDeg, setRenderDeg] = useState(0);
+
+  async function saveConfiguration() {
+    try {
+      const {
+        left: caseLeft,
+        top: caseTop,
+        width,
+        height,
+      } = phoneCaseRef.current!.getBoundingClientRect();
+
+      const { left: containerLeft, top: containerTop } =
+        containerRef.current!.getBoundingClientRect();
+
+      // растояние от края кейса до каря контейнера
+      const leftOffset = caseLeft - containerLeft;
+      const topOffset = caseTop - containerTop;
+      // расположение кейса в контейнере
+      const actualX = renderPosition.x - leftOffset;
+      const actualY = renderPosition.y - topOffset;
+      // градусы
+      const actualDeg = renderDeg;
+      // рисуем картинку на канвас
+      const canvas = document.createElement('canvas');
+      // задаем ему ш\в
+      canvas.width = width;
+      canvas.height = height;
+      //канвас двухмерный
+      const ctx = canvas.getContext('2d');
+      // создаем картинку
+      const userImage = new Image();
+      userImage.crossOrigin = 'anonumous';
+      userImage.src = imageUrl;
+      // дожидаемя загрузки
+      await new Promise((resolve) => (userImage.onload = resolve));
+      // рисуем
+      ctx?.save();
+      ctx?.translate(canvas.width / 2, canvas.height / 2);
+      ctx?.rotate(actualDeg * (Math.PI / 180));
+      ctx?.translate(-canvas.width / 2, -canvas.height / 2);
+      ctx?.drawImage(
+        userImage,
+        actualX,
+        actualY,
+        renderedDimension.width,
+        renderedDimension.height
+      );
+      ctx?.restore();
+
+      const base64 = canvas.toDataURL();
+      const base64Data = base64.split(',')[1];
+
+      const blob = base64ToBlob(base64Data, 'img/png');
+      const file = new File([blob], 'filename.png', { type: 'image/png' });
+
+      await startUpload([file], { configId });
+    } catch (err) {
+      toast({
+        title: 'Something went wrong',
+        description:
+          'There was a problem saving your config, please try again.',
+        variant: 'destructive',
+      });
+    }
+  }
+
   return (
     <div className=" relative mt-20 grid grid-cols-1 lg:grid-cols-3 mb-20 pb-20">
-      <div className="relative h-[37.5rem] overflow-hidden col-span-2 w-full max-w-4xl flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+      <div
+        ref={containerRef}
+        className="relative h-[37.5rem] overflow-hidden col-span-2 w-full max-w-4xl flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      >
         <div className="relative w-60 bg-opacity-50 pointer-events-none aspect-[896/1831]">
           <AspectRatio
+            ref={phoneCaseRef}
             ratio={896 / 1831}
             className=" pointer-events-none relative z-50 aspect-[896/1831]"
           >
-            <Image
+            <NextImage
               className="pointer-events-none z-50 select-none"
               src="/phone-template.png"
               alt="phone"
@@ -74,18 +164,15 @@ function DesignConfigurator({
         </div>
         {/* изменение размеров*/}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute top-0 left-0 flex justify-start items-start "
           ref={targetRef}
-          style={{
-            transform: 'translate(0px, 0px) rotate(0deg) scale(1, 1)',
-          }}
         >
-          <Image
-            width={1000}
-            height={1000}
+          <NextImage
+            width={imageDimensions.width / 4}
+            height={imageDimensions.height / 4}
             src={imageUrl}
             alt="your image"
-            className="pointer-events-none w-[150px] "
+            className="pointer-events-none  "
           />
         </div>
         <Moveable
@@ -95,7 +182,7 @@ function DesignConfigurator({
           edgeDraggable={false}
           startDragRotate={0}
           throttleDragRotate={0}
-          scalable={true}
+          resizable={true}
           keepRatio={true}
           throttleScale={0}
           renderDirections={['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se']}
@@ -105,11 +192,31 @@ function DesignConfigurator({
           onDrag={(e) => {
             e.target.style.transform = e.transform;
           }}
-          onScale={(e) => {
+          onResize={(e) => {
+            e.target.style.width = `${e.width}px`;
+            e.target.style.height = `${e.height}px`;
             e.target.style.transform = e.drag.transform;
           }}
           onRotate={(e) => {
             e.target.style.transform = e.drag.transform;
+          }}
+          onResizeEnd={(e) => {
+            const { height, width } = e.lastEvent;
+            const [x, y] = e.lastEvent.drag.beforeTranslate;
+            setRenderedDimension({
+              width,
+              height,
+            });
+            setRenderPosition({ x, y });
+          }}
+          onDragEnd={(e) => {
+            const [x, y] = e.lastEvent.beforeTranslate;
+            setRenderPosition({ x, y });
+          }}
+          onRotateEnd={(e) => {
+            console.log(e);
+            const deg = e.lastEvent.beforeRotation;
+            setRenderDeg(deg);
           }}
         />
       </div>
@@ -271,7 +378,7 @@ function DesignConfigurator({
                     100
                 )}
               </p>
-              <Button className="w-full">
+              <Button onClick={() => saveConfiguration()} className="w-full">
                 Continue
                 <ArrowRight className="h-4 w-4 ml-1.5 inline" />
               </Button>

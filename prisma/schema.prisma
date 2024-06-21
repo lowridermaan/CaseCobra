@@ -5,7 +5,39 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url=env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  fulfield
+  shipped
+  awaiting_shipment
+}
+
+enum PhoneModel {
+  iphonex
+  iphone11
+  iphone12
+  iphone13
+  iphone14
+  iphone15
+}
+
+enum CaseMaterial {
+  silicone
+  polycarbonate
+}
+
+enum CaseFinish {
+  smooth
+  textured
+}
+
+enum CaseColor {
+  black
+  blue
+  rose
+  fuchsia
 }
 
 // таблица в базе
@@ -14,5 +46,9 @@ model Configuration {
   width Int
   height Int
   imageUrl String
+  color CaseColor?
+  model PhoneModel?
+  material CaseMaterial?
+  finish CaseFinish?
   croppedImageUrl String?
 }

@@ -26,9 +26,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react';
 import NextImage from 'next/image';
 import { useRef, useState } from 'react';
+import { Rnd } from 'react-rnd';
 import Moveable from 'react-moveable';
 import { saveConfig as _saveConfig, SaveConfigArgs } from './actions';
 import { useRouter } from 'next/navigation';
+import HandleResize from '@/components/HandleResize';
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -67,7 +69,6 @@ function DesignConfigurator({
   // для загрузки файла
   const { startUpload } = useUploadThing('imageUploader');
 
-  const targetRef = useRef<HTMLDivElement | null>(null);
   const phoneCaseRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -91,11 +92,9 @@ function DesignConfigurator({
   });
   // расположение фотки
   const [renderPosition, setRenderPosition] = useState({
-    x: 0,
-    y: 0,
+    x: 150,
+    y: 205,
   });
-
-  const [renderDeg, setRenderDeg] = useState(0);
 
   async function saveConfiguration() {
     try {
@@ -115,8 +114,6 @@ function DesignConfigurator({
       // расположение кейса в контейнере
       const actualX = renderPosition.x - leftOffset;
       const actualY = renderPosition.y - topOffset;
-      // градусы
-      const actualDeg = renderDeg;
       // рисуем картинку на канвас
       const canvas = document.createElement('canvas');
       // задаем ему ш\в
@@ -131,10 +128,7 @@ function DesignConfigurator({
       // дожидаемя загрузки
       await new Promise((resolve) => (userImage.onload = resolve));
       // рисуем
-      ctx?.save();
-      ctx?.translate(canvas.width / 2, canvas.height / 2);
-      ctx?.rotate(actualDeg * (Math.PI / 180));
-      ctx?.translate(-canvas.width / 2, -canvas.height / 2);
+
       ctx?.drawImage(
         userImage,
         actualX,
@@ -142,7 +136,6 @@ function DesignConfigurator({
         renderedDimension.width,
         renderedDimension.height
       );
-      ctx?.restore();
 
       const base64 = canvas.toDataURL();
       const base64Data = base64.split(',')[1];
@@ -189,61 +182,43 @@ function DesignConfigurator({
           />
         </div>
         {/* изменение размеров*/}
-        <div
-          className="absolute top-0 left-0 flex justify-start items-start "
-          ref={targetRef}
-        >
-          <NextImage
-            width={imageDimensions.width / 4}
-            height={imageDimensions.height / 4}
-            src={imageUrl}
-            alt="your image"
-            className="pointer-events-none  "
-          />
-        </div>
-        <Moveable
-          target={targetRef}
-          draggable={true}
-          throttleDrag={1}
-          edgeDraggable={false}
-          startDragRotate={0}
-          throttleDragRotate={0}
-          resizable={true}
-          keepRatio={true}
-          throttleScale={0}
-          renderDirections={['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se']}
-          rotatable={true}
-          throttleRotate={0}
-          rotationPosition={'top'}
-          onDrag={(e) => {
-            e.target.style.transform = e.transform;
+        <Rnd
+          default={{
+            x: 150,
+            y: 205,
+            width: imageDimensions.width / 4,
+            height: imageDimensions.height / 4,
           }}
-          onResize={(e) => {
-            e.target.style.width = `${e.width}px`;
-            e.target.style.height = `${e.height}px`;
-            e.target.style.transform = e.drag.transform;
-          }}
-          onRotate={(e) => {
-            e.target.style.transform = e.drag.transform;
-          }}
-          onResizeEnd={(e) => {
-            const { height, width } = e.lastEvent;
-            const [x, y] = e.lastEvent.drag.beforeTranslate;
+          onResizeStop={(_, __, ref, ___, { x, y }) => {
             setRenderedDimension({
-              width,
-              height,
+              height: parseInt(ref.style.height.slice(0, -2)),
+              width: parseInt(ref.style.width.slice(0, -2)),
             });
+
             setRenderPosition({ x, y });
           }}
-          onDragEnd={(e) => {
-            const [x, y] = e.lastEvent.beforeTranslate;
+          onDragStop={(_, data) => {
+            const { x, y } = data;
             setRenderPosition({ x, y });
           }}
-          onRotateEnd={(e) => {
-            const deg = e.lastEvent.beforeRotation;
-            setRenderDeg(deg);
+          className="absolute z-20 border-[3px] border-primary"
+          lockAspectRatio
+          resizeHandleComponent={{
+            topLeft: <HandleResize />,
+            topRight: <HandleResize />,
+            bottomLeft: <HandleResize />,
+            bottomRight: <HandleResize />,
           }}
-        />
+        >
+          <div className="relativ w-full h-full">
+            <NextImage
+              src={imageUrl}
+              fill
+              alt="your image"
+              className="pointer-events-none"
+            />
+          </div>
+        </Rnd>
       </div>
       <div className="h-[37.5rem] w-full col-span-full lg:col-span-1 flex flex-col bg-white">
         <ScrollArea className="realative flex-1 overflow-auto">

@@ -22,10 +22,13 @@ import {
 } from '@/validators/option-validator';
 import { Description, Radio, RadioGroup, Label } from '@headlessui/react';
 import { DropdownMenuLabel } from '@radix-ui/react-dropdown-menu';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react';
 import NextImage from 'next/image';
 import { useRef, useState } from 'react';
 import Moveable from 'react-moveable';
+import { saveConfig as _saveConfig, SaveConfigArgs } from './actions';
+import { useRouter } from 'next/navigation';
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -39,6 +42,28 @@ function DesignConfigurator({
   imageDimensions,
 }: DesignConfiguratorProps) {
   const { toast } = useToast();
+  const router = useRouter();
+
+  const queryClient = useQueryClient();
+
+  const { mutate: saveConfig, isPending } = useMutation({
+    mutationKey: ['save-config'],
+    mutationFn: async (args: SaveConfigArgs) => {
+      await Promise.all([saveConfiguration(), _saveConfig(args)]);
+    },
+    onError: () => {
+      toast({
+        title: 'Something went wrong',
+        description: 'There was an error on our end. Please try again.',
+        variant: 'destructive',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['save-config'] });
+      router.push(`/configure/preview?id=${configId}`);
+    },
+  });
+
   // для загрузки файла
   const { startUpload } = useUploadThing('imageUploader');
 
@@ -46,6 +71,7 @@ function DesignConfigurator({
   const phoneCaseRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  //* main hook
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
     model: (typeof MODELS.options)[number];
@@ -214,7 +240,6 @@ function DesignConfigurator({
             setRenderPosition({ x, y });
           }}
           onRotateEnd={(e) => {
-            console.log(e);
             const deg = e.lastEvent.beforeRotation;
             setRenderDeg(deg);
           }}
@@ -378,7 +403,18 @@ function DesignConfigurator({
                     100
                 )}
               </p>
-              <Button onClick={() => saveConfiguration()} className="w-full">
+              <Button
+                onClick={() =>
+                  saveConfig({
+                    configId,
+                    color: options.color.value,
+                    finish: options.finish.value,
+                    material: options.material.value,
+                    model: options.model.value,
+                  })
+                }
+                className="w-full"
+              >
                 Continue
                 <ArrowRight className="h-4 w-4 ml-1.5 inline" />
               </Button>

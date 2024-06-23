@@ -84,35 +84,39 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
             </div>
             <div className="mt-8">
               <div className="bg-gray-50 p-6 sm:rounded-lg sm:p-8">
-                <div className="flex justify-between items-center text-sm  py-1 mt-2 border-b-2 border-dotted ">
-                  <p className=" text-gray-600">Base Price</p>
-                  <p className="font-medium text-gray-900">
-                    {formatPrice(BASE_PRICE / 100)}
-                  </p>
-                </div>
-                {finish === 'textured' ? (
-                  <div className="flex justify-between items-center text-sm py-1 mt-2 border-b-2 border-dotted ">
-                    <p className=" text-gray-600">Textured finish</p>
+                <div className=" flow-root text-sm">
+                  <div className="flex justify-between items-center text-sm  py-1 mt-2 border-b-2 border-dotted ">
+                    <p className=" text-gray-600">Base Price</p>
                     <p className="font-medium text-gray-900">
-                      {formatPrice(PRODUCT_PRICES.finish.textured / 100)}
+                      {formatPrice(BASE_PRICE / 100)}
                     </p>
                   </div>
-                ) : null}
-                {material === 'polycarbonate' ? (
-                  <div className="flex justify-between items-center text-sm  py-1   mt-2 border-b-2 border-dotted ">
-                    <p className=" text-gray-600">
-                      Soft polycarbonate material
-                    </p>
-                    <p className="font-medium text-gray-900">
-                      {formatPrice(PRODUCT_PRICES.material.polycarbonate / 100)}
+                  {finish === 'textured' ? (
+                    <div className="flex justify-between items-center text-sm py-1 mt-2 border-b-2 border-dotted ">
+                      <p className=" text-gray-600">Textured finish</p>
+                      <p className="font-medium text-gray-900">
+                        {formatPrice(PRODUCT_PRICES.finish.textured / 100)}
+                      </p>
+                    </div>
+                  ) : null}
+                  {material === 'polycarbonate' ? (
+                    <div className="flex justify-between items-center text-sm  py-1   mt-2 border-b-2 border-dotted ">
+                      <p className=" text-gray-600">
+                        Soft polycarbonate material
+                      </p>
+                      <p className="font-medium text-gray-900">
+                        {formatPrice(
+                          PRODUCT_PRICES.material.polycarbonate / 100
+                        )}
+                      </p>
+                    </div>
+                  ) : null}
+                  <div className="flex justify-between items-center text-sm  py-1   mt-4 border-b-2 border-dotted ">
+                    <p className="font-semibold text-gray-900">Order total</p>
+                    <p className="font-semibold text-gray-900">
+                      {formatPrice(totalPrice / 100)}
                     </p>
                   </div>
-                ) : null}
-                <div className="flex justify-between items-center text-sm  py-1   mt-2 border-b-2 border-dotted ">
-                  <p className="font-semibold text-gray-900">Order total</p>
-                  <p className="font-semibold text-gray-900">
-                    {formatPrice(totalPrice / 100)}
-                  </p>
                 </div>
               </div>
             </div>

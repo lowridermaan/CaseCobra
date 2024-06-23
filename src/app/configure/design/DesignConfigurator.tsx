@@ -86,8 +86,8 @@ function DesignConfigurator({
 
   // размер фотки на экране
   const [renderedDimension, setRenderedDimension] = useState({
-    width: imageDimensions.width / 4,
-    height: imageDimensions.height / 4,
+    width: imageDimensions.width,
+    height: imageDimensions.height,
   });
   // расположение фотки
   const [renderPosition, setRenderPosition] = useState({
@@ -194,8 +194,8 @@ function DesignConfigurator({
           ref={targetRef}
         >
           <NextImage
-            width={imageDimensions.width / 4}
-            height={imageDimensions.height / 4}
+            width={imageDimensions.width}
+            height={imageDimensions.height}
             src={imageUrl}
             alt="your image"
             className="pointer-events-none  "
@@ -204,16 +204,9 @@ function DesignConfigurator({
         <Moveable
           target={targetRef}
           draggable={true}
-          throttleDrag={1}
-          edgeDraggable={false}
-          startDragRotate={0}
-          throttleDragRotate={0}
           resizable={true}
           keepRatio={true}
-          throttleScale={0}
-          renderDirections={['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se']}
           rotatable={true}
-          throttleRotate={0}
           rotationPosition={'top'}
           onDrag={(e) => {
             e.target.style.transform = e.transform;

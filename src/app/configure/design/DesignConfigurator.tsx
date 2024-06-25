@@ -1,34 +1,34 @@
-'use client';
+"use client";
 
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Button } from '@/components/ui/button';
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/components/ui/use-toast';
-import { BASE_PRICE } from '@/config/products';
-import { useUploadThing } from '@/lib/uploadthing';
-import { base64ToBlob, cn, formatPrice } from '@/lib/utils';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast";
+import { BASE_PRICE } from "@/config/products";
+import { useUploadThing } from "@/lib/uploadthing";
+import { base64ToBlob, cn, formatPrice } from "@/lib/utils";
 import {
   COLORS,
   FINISHES,
   MATERIALS,
   MODELS,
-} from '@/validators/option-validator';
-import { Description, Radio, RadioGroup, Label } from '@headlessui/react';
-import { DropdownMenuLabel } from '@radix-ui/react-dropdown-menu';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react';
-import NextImage from 'next/image';
-import { useRef, useState } from 'react';
-import Moveable from 'react-moveable';
-import { saveConfig as _saveConfig, SaveConfigArgs } from './actions';
-import { useRouter } from 'next/navigation';
+} from "@/validators/option-validator";
+import { Description, Radio, RadioGroup, Label } from "@headlessui/react";
+import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowRight, Check, ChevronsUpDown } from "lucide-react";
+import NextImage from "next/image";
+import { useRef, useState } from "react";
+import Moveable from "react-moveable";
+import { saveConfig as _saveConfig, SaveConfigArgs } from "./actions";
+import { useRouter } from "next/navigation";
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -47,25 +47,25 @@ function DesignConfigurator({
   const queryClient = useQueryClient();
 
   const { mutate: saveConfig, isPending } = useMutation({
-    mutationKey: ['save-config'],
+    mutationKey: ["save-config"],
     mutationFn: async (args: SaveConfigArgs) => {
       await Promise.all([saveConfiguration(), _saveConfig(args)]);
     },
     onError: () => {
       toast({
-        title: 'Something went wrong',
-        description: 'There was an error on our end. Please try again.',
-        variant: 'destructive',
+        title: "Something went wrong",
+        description: "There was an error on our end. Please try again.",
+        variant: "destructive",
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['save-config'] });
+      queryClient.invalidateQueries({ queryKey: ["save-config"] });
       router.push(`/configure/preview?id=${configId}`);
     },
   });
 
   // для загрузки файла
-  const { startUpload } = useUploadThing('imageUploader');
+  const { startUpload } = useUploadThing("imageUploader");
 
   const targetRef = useRef<HTMLDivElement | null>(null);
   const phoneCaseRef = useRef<HTMLDivElement | null>(null);
@@ -118,15 +118,15 @@ function DesignConfigurator({
       // градусы
       const actualDeg = renderDeg;
       // рисуем картинку на канвас
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       // задаем ему ш\в
       canvas.width = width;
       canvas.height = height;
       //канвас двухмерный
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       // создаем картинку
       const userImage = new Image();
-      userImage.crossOrigin = 'anonumous';
+      userImage.crossOrigin = "anonumous";
       userImage.src = imageUrl;
       // дожидаемя загрузки
       await new Promise((resolve) => (userImage.onload = resolve));
@@ -140,38 +140,38 @@ function DesignConfigurator({
         actualX,
         actualY,
         renderedDimension.width,
-        renderedDimension.height
+        renderedDimension.height,
       );
       ctx?.restore();
 
       const base64 = canvas.toDataURL();
-      const base64Data = base64.split(',')[1];
+      const base64Data = base64.split(",")[1];
 
-      const blob = base64ToBlob(base64Data, 'img/png');
-      const file = new File([blob], 'filename.png', { type: 'image/png' });
+      const blob = base64ToBlob(base64Data, "img/png");
+      const file = new File([blob], "filename.png", { type: "image/png" });
 
       await startUpload([file], { configId });
     } catch (err) {
       toast({
-        title: 'Something went wrong',
+        title: "Something went wrong",
         description:
-          'There was a problem saving your config, please try again.',
-        variant: 'destructive',
+          "There was a problem saving your config, please try again.",
+        variant: "destructive",
       });
     }
   }
 
   return (
-    <div className=" relative mt-20 grid grid-cols-1 lg:grid-cols-3 mb-20 pb-20">
+    <div className="relative mb-20 mt-20 grid grid-cols-1 pb-20 lg:grid-cols-3">
       <div
         ref={containerRef}
-        className="relative h-[37.5rem] overflow-hidden col-span-2 w-full max-w-4xl flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        className="relative col-span-2 flex h-[37.5rem] w-full max-w-4xl items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
-        <div className="relative w-60 bg-opacity-50 pointer-events-none aspect-[896/1831]">
+        <div className="pointer-events-none relative aspect-[896/1831] w-60 bg-opacity-50">
           <AspectRatio
             ref={phoneCaseRef}
             ratio={896 / 1831}
-            className=" pointer-events-none relative z-50 aspect-[896/1831]"
+            className="pointer-events-none relative z-50 aspect-[896/1831]"
           >
             <NextImage
               className="pointer-events-none z-50 select-none"
@@ -180,17 +180,17 @@ function DesignConfigurator({
               fill
             />
           </AspectRatio>
-          <div className="absolute z-40 inset-0 left-[3px] top-px right-[3px] bottom-px rounded-[32px] shadow-[0_0_0_99999px_rgba(229,231,235,0.6)]" />
+          <div className="absolute inset-0 bottom-px left-[3px] right-[3px] top-px z-40 rounded-[32px] shadow-[0_0_0_99999px_rgba(229,231,235,0.6)]" />
           <div
             className={cn(
-              'absolute  inset-0 left-[3px] top-px right-[3px] bottom-px rounded-[32px]',
-              `bg-${options.color.tw}`
+              "absolute inset-0 bottom-px left-[3px] right-[3px] top-px rounded-[32px]",
+              `bg-${options.color.tw}`,
             )}
           />
         </div>
         {/* изменение размеров*/}
         <div
-          className="absolute top-0 left-0 flex justify-start items-start "
+          className="absolute left-0 top-0 flex items-start justify-start"
           ref={targetRef}
         >
           <NextImage
@@ -198,7 +198,7 @@ function DesignConfigurator({
             height={imageDimensions.height}
             src={imageUrl}
             alt="your image"
-            className="pointer-events-none  "
+            className="pointer-events-none"
           />
         </div>
         <Moveable
@@ -207,7 +207,7 @@ function DesignConfigurator({
           resizable={true}
           keepRatio={true}
           rotatable={true}
-          rotationPosition={'top'}
+          rotationPosition={"top"}
           onDrag={(e) => {
             e.target.style.transform = e.transform;
           }}
@@ -238,18 +238,18 @@ function DesignConfigurator({
           }}
         />
       </div>
-      <div className="h-[37.5rem] w-full col-span-full lg:col-span-1 flex flex-col bg-white">
+      <div className="col-span-full flex h-[37.5rem] w-full flex-col bg-white lg:col-span-1">
         <ScrollArea className="realative flex-1 overflow-auto">
           <div
             aria-hidden="true"
-            className="absolute z-10 inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white pointer-events-none"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-white"
           />
           <div className="px-8 pb-12 pt-8">
-            <h2 className="tracking-tight font-bold text-2xl sm:text-3xl">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Customize your case
             </h2>
-            <div className="w-full h-px bg-zinc-200 my-6" />
-            <div className="relative mt-4 h-full flex flex-col justify-between">
+            <div className="my-6 h-px w-full bg-zinc-200" />
+            <div className="relative mt-4 flex h-full flex-col justify-between">
               <div className="flex flex-col gap-6">
                 <RadioGroup
                   value={options.color}
@@ -261,28 +261,29 @@ function DesignConfigurator({
                   <div className="mt-3 flex items-center space-x-3">
                     {COLORS.map((color) => (
                       <Radio
+                        disabled={isPending}
                         key={color.label}
                         value={color}
                         className={({ checked }) =>
                           cn(
-                            'relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 active:ring-0 focus:ring-0 active:outline-none focus:outline-none border-2 border-transparent transition',
+                            "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full border-2 border-transparent p-0.5 transition focus:outline-none focus:ring-0 active:outline-none active:ring-0",
                             {
                               [`border-${color.tw}`]: checked,
-                            }
+                            },
                           )
                         }
                       >
                         <span
                           className={cn(
                             `bg-${color.tw}`,
-                            'h-8 w-8 rounded-full border border-black border-opacity-10'
+                            "h-8 w-8 rounded-full border border-black border-opacity-10",
                           )}
                         ></span>
                       </Radio>
                     ))}
                   </div>
                 </RadioGroup>
-                <div className="relative flex flex-col gap-3 w-full">
+                <div className="relative flex w-full flex-col gap-3">
                   <DropdownMenu>
                     <DropdownMenuLabel>Model</DropdownMenuLabel>
                     <DropdownMenuTrigger asChild>
@@ -296,9 +297,10 @@ function DesignConfigurator({
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className=" w-full">
+                    <DropdownMenuContent className="w-full">
                       {MODELS.options.map((model) => (
                         <DropdownMenuItem
+                          disabled={isPending}
                           key={model.label}
                           onClick={() => {
                             setOptions((prev) => ({
@@ -307,19 +309,19 @@ function DesignConfigurator({
                             }));
                           }}
                           className={cn(
-                            `flex text-sm gap-1 items-center p-1.5 cursor-default hover:bg-zinc-100`,
+                            `flex cursor-default items-center gap-1 p-1.5 text-sm hover:bg-zinc-100`,
                             {
-                              'bg-zinc-100':
+                              "bg-zinc-100":
                                 model.label === options.model.label,
-                            }
+                            },
                           )}
                         >
                           <Check
                             className={cn(
-                              'mr-2 h-4 w-4',
+                              "mr-2 h-4 w-4",
                               model.label === options.model.label
-                                ? 'opacity-100'
-                                : 'opacity-0'
+                                ? "opacity-100"
+                                : "opacity-0",
                             )}
                           />
                           {model.label}
@@ -346,14 +348,15 @@ function DesignConfigurator({
                       <div className="mt-3 space-y-4">
                         {selectableOptions.map((selectOpt) => (
                           <Radio
+                            disabled={isPending}
                             value={selectOpt}
                             key={selectOpt.value}
                             className={({ checked }) =>
                               cn(
-                                'relative block cursor-pointer rounded-lg bg-white px-6 py-4 shadow-sm border-2 border-zinc-200 focus:outline-none ring-0 focus:fing-0 outline-none sm:flex sm:justify-between',
+                                "focus:fing-0 relative block cursor-pointer rounded-lg border-2 border-zinc-200 bg-white px-6 py-4 shadow-sm outline-none ring-0 focus:outline-none sm:flex sm:justify-between",
                                 {
-                                  'border-primary': checked,
-                                }
+                                  "border-primary": checked,
+                                },
                               )
                             }
                           >
@@ -364,14 +367,14 @@ function DesignConfigurator({
                                 </Label>
                                 {selectOpt.description ? (
                                   <Description className="text-gray-500">
-                                    <span className="block sm:inline ">
+                                    <span className="block sm:inline">
                                       {selectOpt.description}
                                     </span>
                                   </Description>
                                 ) : null}
                               </span>
                             </span>
-                            <Description className=" mt-2 flex text-sm sm:ml-4 sm:mt-0 sm:flex-col sm:text-right">
+                            <Description className="mt-2 flex text-sm sm:ml-4 sm:mt-0 sm:flex-col sm:text-right">
                               <span className="font-medium text-gray-900">
                                 {formatPrice(selectOpt.price / 100)}
                               </span>
@@ -380,23 +383,26 @@ function DesignConfigurator({
                         ))}
                       </div>
                     </RadioGroup>
-                  )
+                  ),
                 )}
               </div>
             </div>
           </div>
         </ScrollArea>
-        <div className="w-full px-8 h-16 bg-white">
+        <div className="h-16 w-full bg-white px-8">
           <div className="h-px w-full bg-zinc-200" />
-          <div className="w-full h-full flex justify-end items-center">
-            <div className="w-full flex gap-6 items-center">
-              <p className="font-medium whitespace-nowrap">
+          <div className="flex h-full w-full items-center justify-end">
+            <div className="flex w-full items-center gap-6">
+              <p className="whitespace-nowrap font-medium">
                 {formatPrice(
                   (BASE_PRICE + options.finish.price + options.material.price) /
-                    100
+                    100,
                 )}
               </p>
               <Button
+                isloading={isPending}
+                loadingText="Loading"
+                disabled={isPending}
                 onClick={() =>
                   saveConfig({
                     configId,
@@ -409,7 +415,7 @@ function DesignConfigurator({
                 className="w-full"
               >
                 Continue
-                <ArrowRight className="h-4 w-4 ml-1.5 inline" />
+                <ArrowRight className="ml-1.5 inline h-4 w-4" />
               </Button>
             </div>
           </div>

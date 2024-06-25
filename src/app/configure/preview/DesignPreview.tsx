@@ -14,7 +14,8 @@ import Confetti from 'react-dom-confetti';
 import { createCheckoutSession } from './actions';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
-import { title } from 'process';
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import LoginModal from '@/components/LoginModal';
 
 const config = {
   angle: 272,
@@ -27,8 +28,12 @@ const config = {
 };
 
 function DesignPreview({ configuration }: { configuration: Configuration }) {
-  const [showConffeti, setShowConffeti] = useState(false);
+  const [showConffeti, setShowConffeti] = useState<boolean>(false);
+  const [isModalLoginOpen, setIsModalLoginOpen] = useState<boolean>(false);
+
   const router = useRouter();
+  const { id } = configuration;
+  const { user } = useKindeBrowserClient();
   const { toast } = useToast();
   const { color, model, croppedImageUrl, finish, material } = configuration;
   const tw = COLORS.find(
@@ -64,6 +69,17 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
     },
   });
 
+  function handleCheckout() {
+    if (user) {
+      // создаем сессию оплаты
+      createPaymentSession({ configId: id });
+    } else {
+      //нужно зарегатся
+      localStorage.setItem('configurationId', id);
+      setIsModalLoginOpen(true);
+    }
+  }
+
   return (
     <>
       <div
@@ -72,6 +88,7 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
       >
         <Confetti active={showConffeti} config={config} />
       </div>
+      <LoginModal />
 
       <div className="grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12">
         <div className="sm:col-span-4 md:col-span-3 md:row-span-2 md: row-end-2">

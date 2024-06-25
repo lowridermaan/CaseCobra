@@ -1,14 +1,14 @@
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog';
-import Image from 'next/image';
-import { LoginLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs';
-import { buttonVariants } from './ui/button';
+} from "./ui/dialog";
+import Image from "next/image";
+import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs";
+import { buttonVariants } from "./ui/button";
 
 function LoginModal({
   isOpen,
@@ -19,9 +19,9 @@ function LoginModal({
 }) {
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
-      <DialogContent className="absolute z-[999999] ">
+      <DialogContent className="absolute z-[999999]">
         <DialogHeader>
-          <div className="relative mx-auto w-24 h-24 mb-2">
+          <div className="relative mx-auto mb-2 h-24 w-24">
             <Image
               src="/snake-1.png"
               alt="snake image"
@@ -29,20 +29,20 @@ function LoginModal({
               fill
             />
           </div>
-          <DialogTitle className="text-3xl text-center font-bold tracking-tight text-gray-900">
+          <DialogTitle className="text-center text-3xl font-bold tracking-tight text-gray-900">
             Log in to continue
           </DialogTitle>
-          <DialogDescription className="text-base text-center py-2">
+          <DialogDescription className="py-2 text-center text-base">
             <span className="font-medium text-zinc-900">
               Your configuration was seved!
-            </span>{' '}
+            </span>{" "}
             Please login or create an account to complete your purshase.
           </DialogDescription>
           <div className="grid grid-cols-2 gap-6 divide-x divide-gray-200">
-            <LoginLink className={buttonVariants({ variant: 'outline' })}>
+            <LoginLink className={buttonVariants({ variant: "outline" })}>
               Login
             </LoginLink>
-            <RegisterLink className={buttonVariants({ variant: 'default' })}>
+            <RegisterLink className={buttonVariants({ variant: "default" })}>
               Sign up
             </RegisterLink>
           </div>

@@ -88,7 +88,8 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
       >
         <Confetti active={showConffeti} config={config} />
       </div>
-      <LoginModal />
+
+      <LoginModal isOpen={isModalLoginOpen} setIsOpen={setIsModalLoginOpen} />
 
       <div className="grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12">
         <div className="sm:col-span-4 md:col-span-3 md:row-span-2 md: row-end-2">
@@ -164,9 +165,7 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
                 // isloading={true}
                 // loadingText="Loading"
                 // disabled={true}
-                onClick={() =>
-                  createPaymentSession({ configId: configuration.id })
-                }
+                onClick={handleCheckout}
                 className="px-4 sm:px-6 lg:px-8"
               >
                 Check out <ArrowRight className="h-4 w-4 ml-1.5 inline " />

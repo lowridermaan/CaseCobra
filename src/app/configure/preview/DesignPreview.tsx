@@ -7,9 +7,15 @@ import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products';
 import { cn, formatPrice } from '@/lib/utils';
 import { COLORS, FINISHES, MODELS } from '@/validators/option-validator';
 import { Configuration } from '@prisma/client';
+import { useMutation } from '@tanstack/react-query';
 import { ArrowRight, Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Confetti from 'react-dom-confetti';
+import { createCheckoutSession } from './actions';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import LoginModal from '@/components/LoginModal';
 
 const config = {
   angle: 272,
@@ -22,8 +28,13 @@ const config = {
 };
 
 function DesignPreview({ configuration }: { configuration: Configuration }) {
-  const [showConffeti, setShowConffeti] = useState(false);
+  const [showConffeti, setShowConffeti] = useState<boolean>(false);
+  const [isModalLoginOpen, setIsModalLoginOpen] = useState<boolean>(false);
 
+  const router = useRouter();
+  const { id } = configuration;
+  const { user } = useKindeBrowserClient();
+  const { toast } = useToast();
   const { color, model, croppedImageUrl, finish, material } = configuration;
   const tw = COLORS.find(
     (supportedColor) => supportedColor.value === color
@@ -42,6 +53,33 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
     setShowConffeti(true);
   }, []);
 
+  const { mutate: createPaymentSession, isPending } = useMutation({
+    mutationKey: ['get-checkout-session'],
+    mutationFn: createCheckoutSession,
+    onSuccess: ({ url }) => {
+      if (url) router.push(url);
+      else throw new Error('Unable to retrive payment URL');
+    },
+    onError: () => {
+      toast({
+        title: 'Something went wrong',
+        description: 'There was an error on our end. Please try again',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  function handleCheckout() {
+    if (user) {
+      // создаем сессию оплаты
+      createPaymentSession({ configId: id });
+    } else {
+      //нужно зарегатся
+      localStorage.setItem('configurationId', id);
+      setIsModalLoginOpen(true);
+    }
+  }
+
   return (
     <>
       <div
@@ -50,6 +88,7 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
       >
         <Confetti active={showConffeti} config={config} />
       </div>
+      <LoginModal />
 
       <div className="grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12">
         <div className="sm:col-span-4 md:col-span-3 md:row-span-2 md: row-end-2">
@@ -84,40 +123,52 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
             </div>
             <div className="mt-8">
               <div className="bg-gray-50 p-6 sm:rounded-lg sm:p-8">
-                <div className="flex justify-between items-center text-sm  py-1 mt-2 border-b-2 border-dotted ">
-                  <p className=" text-gray-600">Base Price</p>
-                  <p className="font-medium text-gray-900">
-                    {formatPrice(BASE_PRICE / 100)}
-                  </p>
-                </div>
-                {finish === 'textured' ? (
-                  <div className="flex justify-between items-center text-sm py-1 mt-2 border-b-2 border-dotted ">
-                    <p className=" text-gray-600">Textured finish</p>
+                <div className=" flow-root text-sm">
+                  <div className="flex justify-between items-center text-sm  py-1 mt-2 border-b-2 border-dotted ">
+                    <p className=" text-gray-600">Base Price</p>
                     <p className="font-medium text-gray-900">
-                      {formatPrice(PRODUCT_PRICES.finish.textured / 100)}
+                      {formatPrice(BASE_PRICE / 100)}
                     </p>
                   </div>
-                ) : null}
-                {material === 'polycarbonate' ? (
-                  <div className="flex justify-between items-center text-sm  py-1   mt-2 border-b-2 border-dotted ">
-                    <p className=" text-gray-600">
-                      Soft polycarbonate material
-                    </p>
-                    <p className="font-medium text-gray-900">
-                      {formatPrice(PRODUCT_PRICES.material.polycarbonate / 100)}
+                  {finish === 'textured' ? (
+                    <div className="flex justify-between items-center text-sm py-1 mt-2 border-b-2 border-dotted ">
+                      <p className=" text-gray-600">Textured finish</p>
+                      <p className="font-medium text-gray-900">
+                        {formatPrice(PRODUCT_PRICES.finish.textured / 100)}
+                      </p>
+                    </div>
+                  ) : null}
+                  {material === 'polycarbonate' ? (
+                    <div className="flex justify-between items-center text-sm  py-1   mt-2 border-b-2 border-dotted ">
+                      <p className=" text-gray-600">
+                        Soft polycarbonate material
+                      </p>
+                      <p className="font-medium text-gray-900">
+                        {formatPrice(
+                          PRODUCT_PRICES.material.polycarbonate / 100
+                        )}
+                      </p>
+                    </div>
+                  ) : null}
+                  <div className="flex justify-between items-center text-sm  py-1   mt-4 border-b-2 border-dotted ">
+                    <p className="font-semibold text-gray-900">Order total</p>
+                    <p className="font-semibold text-gray-900">
+                      {formatPrice(totalPrice / 100)}
                     </p>
                   </div>
-                ) : null}
-                <div className="flex justify-between items-center text-sm  py-1   mt-2 border-b-2 border-dotted ">
-                  <p className="font-semibold text-gray-900">Order total</p>
-                  <p className="font-semibold text-gray-900">
-                    {formatPrice(totalPrice / 100)}
-                  </p>
                 </div>
               </div>
             </div>
             <div className="mt-8 flex justify-end pb-12">
-              <Button className="px-4 sm:px-6 lg:px-8">
+              <Button
+                // isloading={true}
+                // loadingText="Loading"
+                // disabled={true}
+                onClick={() =>
+                  createPaymentSession({ configId: configuration.id })
+                }
+                className="px-4 sm:px-6 lg:px-8"
+              >
                 Check out <ArrowRight className="h-4 w-4 ml-1.5 inline " />
               </Button>
             </div>

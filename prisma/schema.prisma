@@ -1,11 +1,10 @@
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url=env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 enum OrderStatus {
@@ -40,15 +39,69 @@ enum CaseColor {
   fuchsia
 }
 
-// таблица в базе
+// таблица детлей кейса
 model Configuration {
-  id String @id @default(cuid())
-  width Int
-  height Int
-  imageUrl String
-  color CaseColor?
-  model PhoneModel?
-  material CaseMaterial?
-  finish CaseFinish?
+  id              String        @id @default(cuid())
+  width           Int
+  height          Int
+  imageUrl        String
+  color           CaseColor?
+  model           PhoneModel?
+  material        CaseMaterial?
+  finish          CaseFinish?
   croppedImageUrl String?
+  Order           Order[]
+}
+
+// таблица пользователей
+model User {
+  id    String  @id @default(cuid())
+  email String
+  Order Order[]
+
+  CreatedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// таблица заказов
+model Order {
+  id              String        @id @default(cuid())
+  configurationId String
+  configuration   Configuration @relation(fields: [configurationId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String
+  amount          Float
+  isPaid          Boolean       @default(false)
+  status          OrderStatus   @default(awaiting_shipment)
+
+  ShippingAdress   ShippingAdress? @relation(fields: [shippingAdressId], references: [id])
+  shippingAdressId String?
+  BillingAdress    BillingAdress?  @relation(fields: [billingAdressId], references: [id])
+  billingAdressId  String?
+  createdAt        DateTime        @default(now())
+  updetedAt        DateTime        @updatedAt
+}
+
+model ShippingAdress {
+  id          String  @id @default(cuid())
+  name        String
+  street      String
+  city        String
+  postalCode  String
+  country     String
+  state       String?
+  phoneNumber String?
+  orders      Order[]
+}
+
+model BillingAdress {
+  id          String  @id @default(cuid())
+  name        String
+  street      String
+  city        String
+  postalCode  String
+  country     String
+  state       String?
+  phoneNumber String?
+  orders      Order[]
 }

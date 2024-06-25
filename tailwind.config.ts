@@ -72,10 +72,15 @@ const config = {
             transform: 'translateY(-50%)',
           },
         },
+        flashing: {
+          '0%, 100%': { opacity: '0.2' },
+          '20%': { opacity: '1' },
+        },
       },
       animation: {
         'fade-in': 'fade-in  0.5s linear forwards',
         scroll: 'scroll var(--scroll-duration) linear infinite',
+        flashing: 'flashing 1.4s linear infinite',
       },
     },
   },

@@ -1,9 +1,10 @@
 "use client";
 
 import { CaseColor } from "@prisma/client";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { cn } from "@/lib/utils";
+import { useScreenResize } from "@/hooks/useScreenResize";
 
 function PhonePreview({
   croppedImageUrl,
@@ -12,27 +13,28 @@ function PhonePreview({
   croppedImageUrl: string;
   color: CaseColor;
 }) {
-  const [renderedDimention, setRenderedDimention] = useState({
-    height: 0,
-    width: 0,
-  });
+  // const [renderedDimention, setRenderedDimention] = useState({
+  //   height: 0,
+  //   width: 0,
+  // });
+  // const ref = useRef<HTMLDivElement>(null);
 
-  const ref = useRef<HTMLDivElement>(null);
+  // function handleResize() {
+  //   if (!ref.current) return;
+  //   const { width, height } = ref.current.getBoundingClientRect();
 
-  function handleResize() {
-    if (!ref.current) return;
-    const { width, height } = ref.current.getBoundingClientRect();
+  //   setRenderedDimention({ width, height });
+  // }
 
-    setRenderedDimention({ width, height });
-  }
+  // useEffect(() => {
+  //   handleResize();
 
-  useEffect(() => {
-    handleResize();
+  //   window.addEventListener("resize", handleResize);
 
-    window.addEventListener("resize", handleResize);
+  //   return window.removeEventListener("resize", handleResize);
+  // }, []);
 
-    return window.removeEventListener("resize", handleResize);
-  }, []);
+  const { renderedDimention, setRef: ref } = useScreenResize();
 
   let caseBackgroundColor = "bg-zinc-950";
   if (color === "blue") caseBackgroundColor = "bg-blue-950";

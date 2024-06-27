@@ -13,26 +13,6 @@ function PhonePreview({
   croppedImageUrl: string;
   color: CaseColor;
 }) {
-  // const [renderedDimention, setRenderedDimention] = useState({
-  //   height: 0,
-  //   width: 0,
-  // });
-  // const ref = useRef<HTMLDivElement>(null);
-
-  // function handleResize() {
-  //   if (!ref.current) return;
-  //   const { width, height } = ref.current.getBoundingClientRect();
-
-  //   setRenderedDimention({ width, height });
-  // }
-
-  // useEffect(() => {
-  //   handleResize();
-
-  //   window.addEventListener("resize", handleResize);
-
-  //   return window.removeEventListener("resize", handleResize);
-  // }, []);
 
   const { renderedDimention, setRef: ref } = useScreenResize();
 

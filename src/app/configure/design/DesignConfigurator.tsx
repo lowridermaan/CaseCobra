@@ -44,8 +44,6 @@ function DesignConfigurator({
   const { toast } = useToast();
   const router = useRouter();
 
-  const queryClient = useQueryClient();
-
   const { mutate: saveConfig, isPending } = useMutation({
     mutationKey: ["save-config"],
     mutationFn: async (args: SaveConfigArgs) => {
@@ -59,8 +57,8 @@ function DesignConfigurator({
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["save-config"] });
       router.push(`/configure/preview?id=${configId}`);
+      router.refresh();
     },
   });
 

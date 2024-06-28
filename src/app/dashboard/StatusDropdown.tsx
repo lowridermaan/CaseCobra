@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,7 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { OrderStatus } from "@prisma/client";
+import { useMutation } from "@tanstack/react-query";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { changeOrderStatus as changeOrderStatusApi } from "./action";
+import { useRouter } from "next/navigation";
 
 const LABEL_MAP: Record<keyof typeof OrderStatus, string> = {
   awaiting_shipment: "Awaiting Shipment",
@@ -22,6 +27,16 @@ function StatusDropdown({
   id: string;
   orderStatus: OrderStatus;
 }) {
+  const router = useRouter();
+
+  const { mutate: changeOrderStatus, isPending } = useMutation({
+    mutationKey: ["change-order-status"],
+    mutationFn: changeOrderStatusApi,
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,6 +56,9 @@ function StatusDropdown({
               "item-center flex cursor-default gap-1 p-2.5 text-sm hover:bg-zinc-100",
               { "bg-zinc-100": orderStatus === status },
             )}
+            onClick={() =>
+              changeOrderStatus({ id, newStatus: status as OrderStatus })
+            }
           >
             <Check
               className={cn(

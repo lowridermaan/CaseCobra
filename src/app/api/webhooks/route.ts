@@ -1,29 +1,32 @@
-import { db } from '@/db';
-import { stripe } from '@/lib/stripe';
-import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
+import { db } from "@/db";
+import { stripe } from "@/lib/stripe";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+import Stripe from "stripe";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
     // raw body as text
     const body = await req.text();
-    const signature = headers().get('stripe-signature');
+    const signature = headers().get("stripe-signature");
     if (!signature) {
-      return new Response('Invalid signature', { status: 400 });
+      return new Response("Invalid signature", { status: 400 });
     }
     // Check that req come from the payment sys.
 
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET!,
     );
 
     // в случае если клиент оплатил
-    if (event.type === 'checkout.session.completed') {
+    if (event.type === "checkout.session.completed") {
       if (!event.data.object.customer_details?.email) {
-        throw new Error('Missing user email');
+        throw new Error("Missing user email");
       }
 
       const session = event.data.object as Stripe.Checkout.Session;
@@ -34,7 +37,7 @@ export async function POST(req: Request) {
       };
 
       if (!userId || !orderId) {
-        throw new Error('Invalid request metadata');
+        throw new Error("Invalid request metadata");
       }
 
       const billingAddress = session.customer_details!.address;
@@ -73,8 +76,8 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error(err);
     return NextResponse.json(
-      { message: 'Something went wrong', ok: false },
-      { status: 500 }
+      { message: "Something went wrong", ok: false },
+      { status: 500 },
     );
   }
 }

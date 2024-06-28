@@ -399,7 +399,7 @@ function DesignConfigurator({
               </p>
               <Button
                 isloading={isPending}
-                loadingText="Loading"
+                loadingText="Saving"
                 disabled={isPending}
                 onClick={() =>
                   saveConfig({

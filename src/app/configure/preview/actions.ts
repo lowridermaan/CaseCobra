@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products';
-import { db } from '@/db';
-import { stripe } from '@/lib/stripe';
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
-import { Order } from '@prisma/client';
+import { BASE_PRICE, PRODUCT_PRICES } from "@/config/products";
+import { db } from "@/db";
+import { stripe } from "@/lib/stripe";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { Order } from "@prisma/client";
 
 export async function createCheckoutSession({
   configId,
@@ -18,21 +18,21 @@ export async function createCheckoutSession({
   });
 
   if (!configuration) {
-    throw new Error('No such configuration found');
+    throw new Error("No such configuration found");
   }
 
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
   if (!user) {
-    throw new Error('You need to be logged in');
+    throw new Error("You need to be logged in");
   }
 
   const { finish, material } = configuration;
 
   let price = BASE_PRICE;
-  if (finish === 'textured') price += PRODUCT_PRICES.finish.textured;
-  if (material === 'polycarbonate')
+  if (finish === "textured") price += PRODUCT_PRICES.finish.textured;
+  if (material === "polycarbonate")
     price += PRODUCT_PRICES.material.polycarbonate;
 
   let order: Order | undefined = undefined;
@@ -43,8 +43,6 @@ export async function createCheckoutSession({
       configurationId: configuration.id,
     },
   });
-
-  console.log('asdaasdasd');
 
   if (existingOrder) {
     order = existingOrder;
@@ -60,10 +58,10 @@ export async function createCheckoutSession({
 
   // платежная система
   const product = await stripe.products.create({
-    name: 'Custom iPhone case',
+    name: "Custom iPhone case",
     images: [configuration.imageUrl],
     default_price_data: {
-      currency: 'USD',
+      currency: "USD",
       unit_amount: price,
     },
   });
@@ -72,9 +70,9 @@ export async function createCheckoutSession({
   const stripeSession = await stripe.checkout.sessions.create({
     success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/thank-you?orderId=${order.id}`,
     cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configure/preview?id=${configuration.id}`,
-    payment_method_types: ['card'],
-    mode: 'payment',
-    shipping_address_collection: { allowed_countries: ['DE', 'US', 'RU'] },
+    payment_method_types: ["card"],
+    mode: "payment",
+    shipping_address_collection: { allowed_countries: ["DE", "US", "RU"] },
     metadata: {
       userId: user.id,
       orderId: order.id,

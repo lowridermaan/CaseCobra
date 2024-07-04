@@ -8,9 +8,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Задеплоен на Vercel
 [](https://case-cobra-liart.vercel.app/)
-```
 ## Цели:
-
+```
 1. Изучить работу Next.js, React, React Query
 2. Практика TypeScript
 3. Прочувствовать бэкэнд (Prisma общая бд, Stripe для проведения оплаты, Kinde для авторизации)

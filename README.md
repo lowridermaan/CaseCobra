@@ -2,13 +2,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Запуск проекта
 npm run dev
-```
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Задеплоен на Vercel
-https://case-cobra-liart.vercel.app/
-
+[](https://case-cobra-liart.vercel.app/)
+```
 ## Цели:
 
 1. Изучить работу Next.js, React, React Query
